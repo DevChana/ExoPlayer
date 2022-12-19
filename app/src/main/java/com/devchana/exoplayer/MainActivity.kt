@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.devchana.exoplayer.databinding.ActivityMainBinding
 import com.google.android.exoplayer2.ExoPlayer
@@ -12,14 +13,14 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 
+/**
+ * https://developer.android.com/codelabs/exoplayer-intro?hl=ko#0 참고하여 개발.
+ */
 class MainActivity : AppCompatActivity() {
 
+    private val viewModel: MainViewModel by viewModels()
     private val binding: ActivityMainBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_main) }
     private var exoPlayer: ExoPlayer? = null
-
-    private var playWhenReady = true // 재생/일시중지 정보
-    private var currentItemIndex = 0 // 현재 미디어 항목 index
-    private var playbackPosition = 0L // 현재 재생 위치
 
     ////////// Override Methods. (Life Cycle)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     ////////// Initialize.
     private fun initialize() {
         binding.lifecycleOwner = this
+
     }
 
     ////////// ExoPlayer.
@@ -73,17 +75,17 @@ class MainActivity : AppCompatActivity() {
                 binding.playerView.player = it
             }.apply {
                 setMediaItem(getTestMediaItem())
-                playWhenReady = this@MainActivity.playWhenReady // 리소스 확보시 자동 재생 여부
-                seekTo(currentItemIndex, playbackPosition) // 미디어 항목 및 재생 위치를 찾는 메소드
+                playWhenReady = viewModel.playWhenReady // 리소스 확보시 자동 재생 여부
+                seekTo(viewModel.currentItemIndex, viewModel.playbackPosition) // 미디어 항목 및 재생 위치를 찾는 메소드
                 prepare()
             }
     }
 
     private fun releasePlayer() {
         exoPlayer?.run {
-            playbackPosition = this.currentPosition
-            currentItemIndex = this.currentMediaItemIndex
-            this@MainActivity.playWhenReady = this.playWhenReady
+            viewModel.playbackPosition = this.currentPosition
+            viewModel.currentItemIndex = this.currentMediaItemIndex
+            viewModel.playWhenReady = this.playWhenReady
             release()
         }
         exoPlayer = null
