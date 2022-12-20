@@ -70,6 +70,8 @@ class MainActivity : AppCompatActivity() {
     ////////// ExoPlayer.
     private fun initPlayer() {
         exoPlayer = ExoPlayer.Builder(this)
+            .setSeekBackIncrementMs(VIDEO_DECREMENT_TIME)
+            .setSeekForwardIncrementMs(VIDEO_INCREMENT_TIME)
             .build()
             .also {
                 binding.playerView.player = it
@@ -102,5 +104,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TEST_URL = "https://www.youtube.com/watch?v=DYlN74EX6cM"
         private const val TEST_URL2 = "https://storage.googleapis.com/exoplayer-test-media-1/mkv/android-screens-lavf-56.36.100-aac-avc-main-1280x720.mkv"
+        private const val VIDEO_INCREMENT_TIME = 10000L
+        private const val VIDEO_DECREMENT_TIME = 10000L
     }
 }
